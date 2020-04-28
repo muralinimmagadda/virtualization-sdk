@@ -432,16 +432,17 @@ class TestPluginUtil:
         assert not mock_generate_python.called
 
     @staticmethod
-    @pytest.mark.parametrize('src_dir', ['/not/a/real/dir/src'])
+    @pytest.mark.parametrize('src_dir', [os.path.join('fake', 'dir')])
     @mock.patch('os.path.isabs', return_value=False)
     @mock.patch('dlpx.virtualization._internal.codegen.generate_python')
     def test_plugin_no_src_dir(mock_generate_python, mock_path_is_relative,
-                               plugin_config_file, artifact_file):
+                               plugin_config_file, artifact_file, tmpdir):
         with pytest.raises(exceptions.UserError) as err_info:
             build.build(plugin_config_file, artifact_file, False, False)
 
         message = err_info.value.message
-        assert message == "The path '/not/a/real/dir/src' does not exist."
+        assert message == "The path '{}' does not exist.".format(
+	    tmpdir.join(os.path.join('fake', 'dir')).strpath)
 
         assert not mock_generate_python.called
 
@@ -499,7 +500,26 @@ class TestPluginUtil:
                                         plugin_config_file, artifact_file,
                                         schema_file):
         # Make it so we can't read the file
-        os.chmod(schema_file, 0000)
+        if os.name == 'nt':
+	    pytest.skip('skipping this test on windows as os.chmod has issues removing permissions on file')
+	    # This code can be used to make the file unreadable on windows but
+	    # since it adds dependency on pypiwin32 for the sdk, i think its better
+	    # to skip this test instead of potentially destabilizing the sdk.
+	
+            # sd = win32security.GetFileSecurity(schema_file, win32security.DACL_SECURITY_INFORMATION)
+            # everyone, domain, type = win32security.LookupAccountName("", "Everyone")
+            # admins, domain, type = win32security.LookupAccountName("", "Administrators")
+            # user, domain, type = win32security.LookupAccountName("", win32api.GetUserName())
+
+            # dacl = win32security.ACL()
+            # dacl.AddAccessAllowedAce(win32security.ACL_REVISION, con.FAILED_ACCESS_ACE_FLAG, everyone)
+            # dacl.AddAccessAllowedAce(win32security.ACL_REVISION, con.FAILED_ACCESS_ACE_FLAG, user)
+            # dacl.AddAccessAllowedAce(win32security.ACL_REVISION, con.FAILED_ACCESS_ACE_FLAG, admins)
+
+            # sd.SetSecurityDescriptorDacl(1, dacl, 0)
+            # win32security.SetFileSecurity(schema_file, win32security.DACL_SECURITY_INFORMATION, sd)
+        else:
+            os.chmod(schema_file, 0000)
         with pytest.raises(exceptions.UserError) as err_info:
             build.build(plugin_config_file, artifact_file, False, False)
 
