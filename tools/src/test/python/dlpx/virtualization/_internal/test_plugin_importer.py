@@ -41,6 +41,16 @@ def get_plugin_importer(plugin_config_file):
 
 
 class TestPluginImporter:
+    """
+    This class tests the plugin_importer module of sdk. Though some of these tests
+    used mock initially to mock out the calls to subprocess, it was found
+    that the behaviour is different between windows and linux causing these tests 
+    to fail on windows. So, some refactoring is done in plugin_importer
+    to facilitate testing without the mocks.
+    
+    The issue is described in detail here : 
+    https://rhodesmill.org/brandon/2010/python-multiprocessing-linux-windows/
+    """
     @staticmethod
     def test_get_plugin_manifest(src_dir, plugin_type,
                                  entry_point_module, entry_point_object,
