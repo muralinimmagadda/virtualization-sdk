@@ -503,9 +503,9 @@ class TestPluginUtil:
         if os.name == 'nt':
 	    pytest.skip('skipping this test on windows as os.chmod has issues removing permissions on file')
 	    #
-	    # This file can be made unreadable on windows using pypiwin32 but
-	    # since it adds dependency on pypiwin32 for the sdk, i think its better
-	    # to skip this test instead of potentially destabilizing the sdk.
+	    # The schema_file can be made unreadable on windows using pypiwin32 but
+	    # since it adds dependency on pypiwin32 for the sdk, skipping this test
+	    # instead of potentially destabilizing the sdk by adding this dependency.
 	    #
         else:
             os.chmod(schema_file, 0000)
