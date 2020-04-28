@@ -64,7 +64,7 @@ class TestPluginImporter:
                                                        None,
                                                        plugin_type,
                                                        False, queue)
-        assert manifest == {}
+        assert manifest == None
 
     @staticmethod
     def test_plugin_entry_object_none(src_dir, plugin_type,
