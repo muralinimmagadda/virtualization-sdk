@@ -97,7 +97,7 @@ class TestFileUtil:
                                         expected_src_dir)
 
         expected_message = "The src directory {} is not a subdirectory of " \
-                           "the plugin root at {}" \
+                           "the plugin root at {}"\
             .format(expected_src_dir,
                     os.path.dirname(expected_plugin_root_dir))
         with pytest.raises(exceptions.UserError) as err_info:
