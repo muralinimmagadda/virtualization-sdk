@@ -502,22 +502,11 @@ class TestPluginUtil:
         # Make it so we can't read the file
         if os.name == 'nt':
 	    pytest.skip('skipping this test on windows as os.chmod has issues removing permissions on file')
-	    # This code can be used to make the file unreadable on windows but
+	    #
+	    # This file can be made unreadable on windows using pypiwin32 but
 	    # since it adds dependency on pypiwin32 for the sdk, i think its better
 	    # to skip this test instead of potentially destabilizing the sdk.
-	
-            # sd = win32security.GetFileSecurity(schema_file, win32security.DACL_SECURITY_INFORMATION)
-            # everyone, domain, type = win32security.LookupAccountName("", "Everyone")
-            # admins, domain, type = win32security.LookupAccountName("", "Administrators")
-            # user, domain, type = win32security.LookupAccountName("", win32api.GetUserName())
-
-            # dacl = win32security.ACL()
-            # dacl.AddAccessAllowedAce(win32security.ACL_REVISION, con.FAILED_ACCESS_ACE_FLAG, everyone)
-            # dacl.AddAccessAllowedAce(win32security.ACL_REVISION, con.FAILED_ACCESS_ACE_FLAG, user)
-            # dacl.AddAccessAllowedAce(win32security.ACL_REVISION, con.FAILED_ACCESS_ACE_FLAG, admins)
-
-            # sd.SetSecurityDescriptorDacl(1, dacl, 0)
-            # win32security.SetFileSecurity(schema_file, win32security.DACL_SECURITY_INFORMATION, sd)
+	    #
         else:
             os.chmod(schema_file, 0000)
         with pytest.raises(exceptions.UserError) as err_info:
