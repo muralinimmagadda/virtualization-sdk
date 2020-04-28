@@ -370,8 +370,9 @@ class TestCodegen:
         with pytest.raises(OSError) as err_info:
             codegen._copy_generated_to_dir(src_dir, dst_dir)
 
-        assert (
-            err_info.value.strerror == 'No such file or directory' or
-            err_info.value.strerror == 'The system cannot find the path specified'
-            )
+        if os.name == 'nt':
+            assert err_info.value.strerror == 'The system cannot find the path specified'
+        else:
+            assert err_info.value.strerror == 'No such file or directory'
+
         assert err_info.value.filename.startswith(src_dir)
